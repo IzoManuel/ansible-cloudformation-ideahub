@@ -60,7 +60,7 @@ This directory contains Ansible configurations and playbooks for configuring the
     cd cloudformation-ideahub/scripts
     python3 deploy.py
     ```
-    - hosts.ini file  will be automatically updated with the EC2 instance's IP. You can also manually set this up.
+    - ```hosts.ini``` file  will be automatically updated with the EC2 instance's IP. You can also manually set this up.
 
 2. **Run Ansible and provide Vault Password**:
     ```sh
