@@ -32,7 +32,7 @@
     login_unix_socket: /var/run/mysqld/mysqld.sock
     priv: '*.*:ALL,GRANT'
     state: present
-  when: mysql_root_password_status.rc != 0
+  # when: mysql_root_password_status.rc != 0
 
 - name: Save root password in .my.cnf
   template:
@@ -51,14 +51,14 @@
   mysql_user:
     name: "{{ mysql_user_name }}"
     password: "{{ mysql_user_password }}"
-    priv: 'bright_ideas.*:ALL'
+    priv: '*.*:ALL'
     host: '%'
     state: present
     login_user: root
     login_password: "{{ mysql_root_password }}"
 
-- name: Remove MySQL configuration file
-  file:
-    path: /root/.my.cnf
-    state: absent
-  become: true
+# - name: Remove MySQL configuration file
+#   file:
+#     path: /root/.my.cnf
+#     state: absent
+#   become: true
