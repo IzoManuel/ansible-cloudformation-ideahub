@@ -31,20 +31,20 @@ Parameters:
     ConstraintDescription: must be a valid security group ID.
 
 Resources:
-  # EC2Instance:
-  #   Type: AWS::EC2::Instance
-  #   Properties: 
-  #     InstanceType: 
-  #       Ref: InstanceType
-  #     KeyName: 
-  #       Ref: KeyName
-  #     ImageId: 
-  #       Ref: ImageId
-  #     SecurityGroupIds: 
-  #       - Ref: SecurityGroup
-  #     Tags:
-  #       - Key: Name
-  #         Value: IdeaHub-Instance
+  EC2Instance:
+    Type: AWS::EC2::Instance
+    Properties: 
+      InstanceType: 
+        Ref: InstanceType
+      KeyName: 
+        Ref: KeyName
+      ImageId: 
+        Ref: ImageId
+      SecurityGroupIds: 
+        - Ref: SecurityGroup
+      Tags:
+        - Key: Name
+          Value: IdeaHub-Instance
           
   ECSCluster:
     Type: AWS::ECS::Cluster
@@ -53,7 +53,7 @@ Resources:
 
   IdeaHubTaskDefinition:
     Type: AWS::ECS::TaskDefinition
-    # DependsOn: !Ref EC2Instance
+    DependsOn: EC2Instance
     Properties:
       Family: ideahub-service-task
       NetworkMode: awsvpc
@@ -72,7 +72,9 @@ Resources:
           Environment:
             - Name: DB_PORT
               Value: "3306"
-            - Name: DB_USERNAME
+            - Name: DB_HOST
+              Value: !GetAtt EC2Instance.PublicIp
+            - Name: DB_USER
               Value: "{{resolve:secretsmanager:dev/ideaHub/Mysql:SecretString:username}}"
             - Name: DB_PASSWORD
               Value: "{{resolve:secretsmanager:dev/ideaHub/Mysql:SecretString:password}}"
@@ -110,7 +112,7 @@ Resources:
 
 
 
-# Outputs:
+Outputs:
 #   ECSClusterName:
 #     Description: The name of the ECS cluster
 #     Value: 
@@ -126,16 +128,16 @@ Resources:
 #     Value: 
 #       Ref: IdeaHubTaskDefinition
 
-#   InstanceId:
-#     Description: The Instance ID of the created EC2 instance
-#     Value: 
-#       Ref: EC2Instance
-#   PublicIP:
-#     Description: The public IP address of the EC2 instance
-#     Value: 
-#       Fn::GetAtt: 
-#         - EC2Instance
-#         - PublicIp
+  InstanceId:
+    Description: The Instance ID of the created EC2 instance
+    Value: 
+      Ref: EC2Instance
+  PublicIP:
+    Description: The public IP address of the EC2 instance
+    Value: 
+      Fn::GetAtt: 
+        - EC2Instance
+        - PublicIp
 #   PublicDNS:
 #     Description: The public DNS name of the EC2 instance
 #     Value: 

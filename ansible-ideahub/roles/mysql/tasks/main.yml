@@ -20,7 +20,7 @@
     enabled: yes
 
 - name: Check if MySQL root password is set
-  shell: "mysqladmin -u root -p'{{ mysql_root_password }}' status"
+  shell: "mysqladmin -u root -p'{{ mysql_root_password }}' version"
   register: mysql_root_password_status
   ignore_errors: true
 
@@ -56,6 +56,15 @@
     state: present
     login_user: root
     login_password: "{{ mysql_root_password }}"
+
+- name: Update MySQL bind address to 0.0.0.0
+  lineinfile:
+    path: /etc/mysql/mysql.conf.d/mysqld.cnf
+    regexp: '^bind-address\s*=\s*127.0.0.1'
+    line: 'bind-address = 0.0.0.0'
+    state: present
+  notify:
+    - Restart MySQL
 
 # - name: Remove MySQL configuration file
 #   file:
